@@ -29,13 +29,15 @@
 	</head>
 	<body>
 		<?php
-		date_default_timezone_set('Europe/Prague');
-		$link = mysqli_connect('localhost', 'root', 'root', 'CAP');
-		if (!$link) {
-			echo "Error: Unable to connect to database.".PHP_EOL;
-			echo "Reason: ".mysqli_connect_error().PHP_EOL;
-			exit;
-		}
-		include 'finediff.php';
-		include 'variables.php';
-		include 'functions.php';
+date_default_timezone_set('Europe/Prague');
+require_once 'dbconnect.php';
+
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+if (!$link) {
+    echo "Error: Unable to connect to database." . PHP_EOL;
+    echo "Reason: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+include 'finediff.php';
+include 'variables.php';
+include 'functions.php';
