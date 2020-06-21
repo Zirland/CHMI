@@ -1,1 +1,1 @@
-CHMI
+Skript pro zpracování meteorologické výstrahy ve formátu CAP.
