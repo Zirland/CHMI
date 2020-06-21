@@ -30,7 +30,9 @@
 	<body>
 		<?php
 date_default_timezone_set('Europe/Prague');
-$link = mysqli_connect('d80.wedos.net', 'w243014_cap', 'CQJnqcCw', 'd243014_cap');
+require_once 'dbconnect.php';
+
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 if (!$link) {
     echo "Error: Unable to connect to database." . PHP_EOL;
     echo "Reason: " . mysqli_connect_error() . PHP_EOL;
