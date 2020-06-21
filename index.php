@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('Europe/Prague');
 
-$link = mysqli_connect('localhost', 'root', 'root', 'CAP');
+$link = mysqli_connect('d80.wedos.net', 'w243014_cap', 'CQJnqcCw', 'd243014_cap');
 if (!$link) {
     echo "Error: Unable to connect to database." . PHP_EOL;
     echo "Reason: " . mysqli_connect_error() . PHP_EOL;
