@@ -331,9 +331,9 @@ $barvy = [
 ];
 
 $kod_barvy = [
-    "Moderate" => "Žlutá",
-    "Severe"   => "Oranžová",
-    "Extreme"  => "Červená",
+    "Moderate" => "Nízký st. nebezpečí",
+    "Severe"   => "Vysoký st. nebezpečí",
+    "Extreme"  => "Extrémní st. nebezpečí",
 ];
 
 $obrazky2 = [
