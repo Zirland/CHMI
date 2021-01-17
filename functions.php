@@ -223,16 +223,13 @@ function Fcompare($incident1, $incident2, $ORP)
     $pozadi  = $barvy[$severity2];
     $zaslani = date("(d)H:i", $sent);
     $trvani  = $maxdoba - $sent;
-    $start   = $onset2 - $sent;
-    if ($onset2 == "") {
-        $start = $onset1 - $sent;
-    }
-    $end = $expires2 - $onset2;
-    if ($onset2 == "") {
-        $end = $expires1 - $onset1;
-    }
-    $dojezd = $maxdoba - $expires2;
-    if ($expires2 == "") {
+    if ($onset2 != "" && $expires2 != "") {
+        $start  = $onset2 - $sent;
+        $end    = $expires2 - $onset2;
+        $dojezd = $maxdoba - $expires2;
+    } else {
+        $start  = $onset1 - $sent;
+        $end    = $expires1 - $onset1;
         $dojezd = $maxdoba - $expires1;
     }
 
