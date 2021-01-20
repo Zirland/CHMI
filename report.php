@@ -411,8 +411,10 @@ foreach ($downlevel as $ORP) {
 }
 $vystup .= "</table></blockquote>";
 
-sort($used);
-$used = array_unique($used);
+if ($used) {
+    sort($used);
+    $used = array_unique($used);
+}
 
 unset($usedcodes);
 
@@ -513,9 +515,9 @@ if ($result144 = mysqli_query($link, $query144)) {
         $situace[] = $row144[0];
     }
 }
-$situace = array_filter($situace);
 
 if ($situace) {
+    $situace = array_filter($situace);
     echo "<p></p><b>Meteorologická situace:</b> $situace[0]<br/>";
 }
 
