@@ -223,16 +223,13 @@ function Fcompare($incident1, $incident2, $ORP)
     $pozadi  = $barvy[$severity2];
     $zaslani = date("(d)H:i", $sent);
     $trvani  = $maxdoba - $sent;
-    $start   = $onset2 - $sent;
-    if ($onset2 == "") {
-        $start = $onset1 - $sent;
-    }
-    $end = $expires2 - $onset2;
-    if ($onset2 == "") {
-        $end = $expires1 - $onset1;
-    }
-    $dojezd = $maxdoba - $expires2;
-    if ($expires2 == "") {
+    if ($onset2 != "" && $expires2 != "") {
+        $start  = $onset2 - $sent;
+        $end    = $expires2 - $onset2;
+        $dojezd = $maxdoba - $expires2;
+    } else {
+        $start  = $onset1 - $sent;
+        $end    = $expires1 - $onset1;
         $dojezd = $maxdoba - $expires1;
     }
 
@@ -247,12 +244,7 @@ function Fcompare($incident1, $incident2, $ORP)
     $codeArr = explode(".", $code2);
     $cat     = $codeArr[0];
 
-    $zlom = mktime(13, 0, 0, 12, 17, 2018);
-    if ($sent < $zlom) {
-        $image = $obrazky[$code2];
-    } else {
-        $image = $obrazky2[$code2];
-    }
+    $image = $obrazky[$code2];
 
 //    if ($different == 0) {return $out;}
 
@@ -404,12 +396,7 @@ function output($incident_no, $ORP)
             $codeArr = explode(".", $code);
             $cat     = $codeArr[0];
 
-            $zlom = mktime(13, 0, 0, 12, 17, 2018);
-            if ($sent < $zlom) {
-                $image = $obrazky[$code2];
-            } else {
-                $image = $obrazky2[$code2];
-            }
+            $image = $obrazky[$code2];
 
             $out .= "<table class=\"tg\" width=\"100%\">";
             $out .= "<tr><td width=\"30\" style=\"background-color: $pozadi;\"><img src=\"svg/" . $image . ".svg\"></td><td width=\"50\" style=\"text-align: center;\">$kod_severity</td><td><table class=\"no\" width=\"100%\"><tr><td width=\"$before%\"></td><td width=\"30\" style=\"text-align: right;\">$caszah[0]<br/>$caszah[1]</td><td width=\"$jazda%\"><img src=\"$pozadi.png\" height=\"20\" width=\"100%\"></td><td width=\"30\" style=\"text-align: left;\">$casuko[0]<br/>$casuko[1]</td><td width=\"$after%\"></td></tr></table></td></tr>";

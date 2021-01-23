@@ -411,20 +411,10 @@ foreach ($downlevel as $ORP) {
 }
 $vystup .= "</table></blockquote>";
 
-sort($used);
-$used = array_unique($used);
-
-unlink($usedcodes);
-$query473 = "SELECT DISTINCT code FROM temp";
-if ($result473 = mysqli_query($link, $query473)) {
-    while ($row473 = mysqli_fetch_row($result473)) {
-        $usedcodes[] = $row473[0];
-    }
+if ($used) {
+    sort($used);
+    $used = array_unique($used);
 }
-
-if (in_array("HPPS", $usedcodes)) {$useHPPS = "1";}
-if (in_array("SIVS", $usedcodes)) {$useSIVS = "1";}
-if (in_array("SVRS", $usedcodes)) {$useSVRS = "1";}
 
 $query55 = "SELECT * FROM header WHERE id = '$header_id';";
 if ($result55 = mysqli_query($link, $query55)) {
@@ -433,36 +423,51 @@ if ($result55 = mysqli_query($link, $query55)) {
         $sent           = $row55[2];
         $status         = $row55[3];
         $msgType        = $row55[4];
+        $useSIVS        = $row55[5];
+        $useHPPS        = $row55[6];
+        $useSVRS        = $row55[7];
         $note           = $row55[8];
         $references     = $row55[9];
         $incidents      = $row55[10];
         $poradove_cislo = substr($identifier, -6);
         $typ_zpravy     = substr($identifier, 31, 6);
 
-        echo "<span class=\"header\">";
-        echo "Zpráva č. " . $poradove_cislo . "<br/>";
-        if ($useHPPS == "0" && $useSIVS == "0" && $useSVRS == "0") {
-            $uvod = "Informační zpráva ČHMÚ";
-        } elseif ($msgType == "Cancel") {
-            $uvod = "Informační zpráva ČHMÚ";
-        } else {
-            $uvod = $nadpis[$status];
+        switch ($status) {
+            case "Exercise":
+            case "System":
+            case "Test":
+                $header = "ÚČELOVÁ INFORMACE ČHMÚ – TESTOVACÍ ZPRÁVA";
+                if ($useSVRS == "1" && $useSIVS == "0" && $useHPPS == "0") {
+                    $header .= "<br/>SMOGOVÝ VAROVNÝ A REGULAČNÍ SYSTÉM";
+                }
+                if ($useSIVS == "1" && $useHPPS == "0") {
+                    $header .= "<br/>SYSTÉM INTEGROVANÉ VÝSTRAŽNÉ SLUŽBY";
+                }
+                if ($useHPPS == "1") {
+                    $header .= "<br/>PŘEDPOVĚDNÍ POVODŇOVÁ SLUŽBA ČHMÚ";
+                }
+                break;
+            case "Actual":
+            default:
+                $header = "VÝSTRAHA ČHMÚ";
+                if ($useSVRS == "1" && $useSIVS == "0" && $useHPPS == "0") {
+                    $header = "ZPRÁVA SMOGOVÉHO VAROVNÉHO A REGULAČNÍHO SYSTÉMU";
+                }
+                if ($useSIVS == "1" && $useHPPS == "0") {
+                    $header .= "<br/>SYSTÉM INTEGROVANÉ VÝSTRAŽNÉ SLUŽBY";
+                }
+                if ($useHPPS == "1") {
+                    $header .= "<br/>VÝSTRAHA PŘEDPOVĚDNÍ POVODŇOVÉ SLUŽBY ČHMÚ";
+                }
+                if ($useSVRS == "0" && $useSIVS == "0" && $useHPPS == "0") {
+                    $header = "INFORMAČNÍ ZPRÁVA ČHMÚ";
+                }
+                break;
         }
-        echo $uvod;
 
-        if ($useHPPS == "1") {echo "<b>";} else {echo "<span style=\"font-size:0;\">";}
-        echo "HPPS";
-        if ($useHPPS == "1") {echo "</b>";} else {echo "</span>";}
-        echo "&nbsp;";
-        if ($useSIVS == "1") {echo "<b>";} else {echo "<span style=\"font-size:0;\">";}
-        echo "SIVS";
-        if ($useSIVS == "1") {echo "</b>";} else {echo "</span>";}
-        echo "&nbsp;";
-        if ($useSVRS == "1") {echo "<b>";} else {echo "<span style=\"font-size:0;\">";}
-        echo "SVRS";
-        if ($useSVRS == "1") {echo "</b>";} else {echo "</span>";}
+        echo "<div class=\"header\">$header</div>";
         echo "<br/>";
-
+        echo "Zpráva č. " . $poradove_cislo . "<br/>";
         echo "Odesláno: " . date("d.m.Y H:i:s", $sent) . "<br/>";
 
         $previous                = explode(",", $references);
@@ -473,12 +478,12 @@ if ($result55 = mysqli_query($link, $query55)) {
         $previous_time           = date("H:i:s", $previous_timestamp);
 
         switch ($msgType) {
-            case 'Alert':
+            case "Alert":
                 break;
-            case 'Update':
+            case "Update":
                 echo "Zpráva aktualizuje předchozí zprávu č. $previous_poradove_cislo vydanou $previous_date v $previous_time hodin<br/>";
                 break;
-            case 'Cancel':
+            case "Cancel":
                 echo "Zpráva ruší platnost předchozí zprávy č. $previous_poradove_cislo vydané $previous_date v $previous_time hodin<br/>";
                 break;
             default:
@@ -497,20 +502,20 @@ if ($celkem == 0) {echo "Na zvoleném území „$prvky[$initORP]“ nejsou vyhl
 $query144 = "SELECT DISTINCT situation FROM incidents WHERE header_id = '$header_id';";
 if ($result144 = mysqli_query($link, $query144)) {
     while ($row144 = mysqli_fetch_row($result144)) {
-        $situace = $row144[0];
+        $situace[] = $row144[0];
     }
 }
-$situatace = array_filter($situace);
 
 if ($situace) {
-    echo "<p></p><b>Meteorologická situace:</b> $situace<br/>";
+    $situace = array_filter($situace);
+    echo "<p></p><b>Meteorologická situace:</b> $situace[0]<br/>";
 }
 
 echo $vystup;
 
 echo "<hr>";
 
-unlink($distribuce);
+unset($distribuce);
 
 $query560 = "SELECT kraj FROM orp WHERE code IN (SELECT ORP FROM area WHERE header_id = '$header_id' OR header_id = '$old_header_id');";
 if ($result560 = mysqli_query($link, $query560)) {
@@ -519,16 +524,18 @@ if ($result560 = mysqli_query($link, $query560)) {
     }
 }
 
-$distribuce = array_unique($distribuce);
-$distribuce = array_filter($distribuce);
+if ($distribuce) {
+    $distribuce = array_unique($distribuce);
+    $distribuce = array_filter($distribuce);
 
-$krajedistr = "";
+    $krajedistr = "";
 
-echo "Distribuce: ";
-foreach ($distribuce as $distrkraj) {
-    $krajedistr .= "$KRAJE_KODY[$distrkraj], ";
+    echo "Distribuce: ";
+    foreach ($distribuce as $distrkraj) {
+        $krajedistr .= "$KRAJE_KODY[$distrkraj], ";
+    }
+
+    echo substr($krajedistr, 0, -2);
 }
-
-echo substr($krajedistr, 0, -2);
 
 mysqli_close($link);

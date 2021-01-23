@@ -40,6 +40,7 @@ foreach ($xml->code as $system) {
 }
 
 $sent_timestamp = strtotime($sent);
+$sent           = $sent_timestamp;
 
 $query42   = "INSERT INTO header (`identifier`, `sent`, `status`, `msgType`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `note`, `references`, `incidents`) VALUES ('$identifier', '$sent_timestamp', '$status', '$msgType', '$useSIVS', '$useHPPS', '$useSVRS', '$note', '$references', '$incidents');";
 $command37 = mysqli_query($link, $query42);
@@ -120,7 +121,7 @@ foreach ($xml->info as $jev) {
         $expires_timestamp = 0;
     }
 
-    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001" && $respmatrx != "000000000" && $codeSIVS != "OUTLOOK") {
+    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001" && $respmatrx != "000000000") {
         $query114    = "INSERT INTO incidents (`header_id`, `language`, `category`, `event`, `responseType`, `urgency`, `severity`, `certainty`, `onset`, `expires`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `headline`, `description`, `instruction`, `web`, `situation`, `hydroOutlook`) VALUES ('$header_id', '$lang', '$category', '$event',  '$respmatrx',  '$urgency', '$severity', '$certainty', '$onset_timestamp', '$expires_timestamp', '$codeSIVS', '$codeHPPS', '$codeSVRS', '$headline', '$description', '$instruction', '$web', '$situation', '$hydroOutlook');";
         $command114  = mysqli_query($link, $query114);
         $incident_id = mysqli_insert_id($link);
@@ -565,7 +566,7 @@ if ($result10 = mysqli_query($link, $query10)) {
         echo output($old_incident_id, 1);
     }
 }
-$staryseznam = implode(",", $old_ids);
+@$staryseznam = implode(",", $old_ids);
 echo "$staryseznam<br/>";
 
 echo "</td><td width=\"50%\">";
@@ -578,7 +579,7 @@ if ($result35 = mysqli_query($link, $query35)) {
         echo output($incident_id, 1);
     }
 }
-$novyseznam = implode(",", $new_ids);
+@$novyseznam = implode(",", $new_ids);
 echo "$novyseznam<br/>";
 
 echo "</td></tr></table>";
@@ -606,179 +607,183 @@ foreach ($codes as $ORP) {
     }
 }
 
-foreach ($investigate as $ORP) {
-    unset($noveORP);
-    unset($stareORP);
-    $stareORP[] = 0;
+if ($investigate) {
+    foreach ($investigate as $ORP) {
+        unset($noveORP);
+        unset($stareORP);
+        $stareORP[] = 0;
 
-    $query60 = "SELECT incident_id FROM area WHERE incident_id IN ($novyseznam) AND ORP = '$ORP';";
-    if ($result60 = mysqli_query($link, $query60)) {
-        while ($row60 = mysqli_fetch_row($result60)) {
-            $noveORP[] = $row60[0];
-        }
-    }
-
-    $query63 = "SELECT incident_id FROM area WHERE incident_id IN ($staryseznam) AND ORP = '$ORP';";
-    if ($result63 = mysqli_query($link, $query63)) {
-        while ($row63 = mysqli_fetch_row($result63)) {
-            $stareORP[] = $row63[0];
-        }
-    }
-
-    foreach ($noveORP as $nove) {
-        $old_incident_id = 0;
-        $query48         = "SELECT * FROM incidents WHERE id = '$nove';";
-        if ($result48 = mysqli_query($link, $query48)) {
-            while ($row48 = mysqli_fetch_row($result48)) {
-                $urgency  = $row48[6];
-                $onset    = $row48[9];
-                $expires  = $row48[10];
-                $codeSIVS = $row48[11];
-                $codeHPPS = $row48[12];
-                $codeSVRS = $row48[13];
-
-                $code = $codeSVRS;
-                if ($codeSIVS != "0") {$code = $codeSIVS;}
-                if ($codeHPPS != "0") {$code = $codeHPPS;}
-
-                if ($urgency == "Immediate") {$onset1 = 0;}
+        $query60 = "SELECT incident_id FROM area WHERE incident_id IN ($novyseznam) AND ORP = '$ORP';";
+        if ($result60 = mysqli_query($link, $query60)) {
+            while ($row60 = mysqli_fetch_row($result60)) {
+                $noveORP[] = $row60[0];
             }
         }
 
-        $free = implode(",", $stareORP);
+        $query63 = "SELECT incident_id FROM area WHERE incident_id IN ($staryseznam) AND ORP = '$ORP';";
+        if ($result63 = mysqli_query($link, $query63)) {
+            while ($row63 = mysqli_fetch_row($result63)) {
+                $stareORP[] = $row63[0];
+            }
+        }
 
-        $cat_rozpad = explode(".", $code);
-        $cat        = $cat_rozpad[0];
-        $value      = $cat_rozpad[1];
+        foreach ($noveORP as $nove) {
+            $old_incident_id = 0;
+            $query48         = "SELECT * FROM incidents WHERE id = '$nove';";
+            if ($result48 = mysqli_query($link, $query48)) {
+                while ($row48 = mysqli_fetch_row($result48)) {
+                    $urgency  = $row48[6];
+                    $onset    = $row48[9];
+                    $expires  = $row48[10];
+                    $codeSIVS = $row48[11];
+                    $codeHPPS = $row48[12];
+                    $codeSVRS = $row48[13];
 
-        $stop = 0;
+                    $code = $codeSVRS;
+                    if ($codeSIVS != "0") {$code = $codeSIVS;}
+                    if ($codeHPPS != "0") {$code = $codeHPPS;}
 
-        $query64 = "SELECT id, onset, expires, urgency FROM incidents WHERE header_id = '$old_header_id' AND (codeSIVS = '$code' OR codeHPPS = '$code' OR codeSVRS = '$code') AND id IN ($free);";
-        if ($result64 = mysqli_query($link, $query64)) {
-            $pocet64 = mysqli_num_rows($result64);
-            while ($row64 = mysqli_fetch_row($result64)) {
-                $old_inc_id = $row64[0];
-                $oldonset   = $row64[1];
-                $oldexpires = $row64[2];
-                $oldurgency = $row64[3];
-                if ($oldurgency == "Immediate" && $onset < $oldexpires) {$oldonset1 = 0;}
+                    if ($urgency == "Immediate") {$onset1 = 0;}
+                }
+            }
 
-                if ($oldonset1 == $onset1 && $oldexpires == $expires) {
-                    $old_incident_id = $old_inc_id;
-                    $stop            = 1;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+            $free = implode(",", $stareORP);
+
+            $cat_rozpad = explode(".", $code);
+            $cat        = $cat_rozpad[0];
+            $value      = $cat_rozpad[1];
+
+            $stop = 0;
+
+            $query64 = "SELECT id, onset, expires, urgency FROM incidents WHERE header_id = '$old_header_id' AND (codeSIVS = '$code' OR codeHPPS = '$code' OR codeSVRS = '$code') AND id IN ($free);";
+            if ($result64 = mysqli_query($link, $query64)) {
+                $pocet64 = mysqli_num_rows($result64);
+                while ($row64 = mysqli_fetch_row($result64)) {
+                    $old_inc_id = $row64[0];
+                    $oldonset   = $row64[1];
+                    $oldexpires = $row64[2];
+                    $oldurgency = $row64[3];
+                    if ($oldurgency == "Immediate" && $onset < $oldexpires) {$oldonset1 = 0;}
+
+                    if ($oldonset1 == $onset1 && $oldexpires == $expires) {
+                        $old_incident_id = $old_inc_id;
+                        $stop            = 1;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
 
-        if ($stop == 0 && $result101 = mysqli_query($link, $query64)) {
-            while ($row101 = mysqli_fetch_row($result101)) {
-                $old_inc_id = $row101[0];
-                $oldonset   = $row101[1];
-                $oldurgency = $row101[3];
-                if ($oldurgency == "Immediate") {$oldonset1 = 0;}
+            if ($stop == 0 && $result101 = mysqli_query($link, $query64)) {
+                while ($row101 = mysqli_fetch_row($result101)) {
+                    $old_inc_id = $row101[0];
+                    $oldonset   = $row101[1];
+                    $oldurgency = $row101[3];
+                    if ($oldurgency == "Immediate") {$oldonset1 = 0;}
 
-                if ($oldonset1 == $onset1) {
-                    $old_incident_id = $old_inc_id;
-                    $stop            = 1;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+                    if ($oldonset1 == $onset1) {
+                        $old_incident_id = $old_inc_id;
+                        $stop            = 1;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
 
-        if ($stop == 0 && $result119 = mysqli_query($link, $query64)) {
-            while ($row120 = mysqli_fetch_row($result64)) {
-                $old_inc_id = $row120[0];
-                $oldexpires = $row120[2];
+            if ($stop == 0 && $result119 = mysqli_query($link, $query64)) {
+                while ($row120 = mysqli_fetch_row($result64)) {
+                    $old_inc_id = $row120[0];
+                    $oldexpires = $row120[2];
 
-                if ($oldexpires == $expires) {
-                    $old_incident_id = $old_inc_id;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+                    if ($oldexpires == $expires) {
+                        $old_incident_id = $old_inc_id;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
 
-        $stop = 0;
+            $stop = 0;
 
-        $query64 = "SELECT id, onset, expires, urgency FROM incidents WHERE header_id = '$old_header_id' AND (codeSIVS LIKE '$cat.%' OR codeHPPS LIKE '$cat.%' OR codeSVRS LIKE '%.$value') AND id IN ($free);";
-        if ($result64 = mysqli_query($link, $query64)) {
-            $pocet64 = mysqli_num_rows($result64);
-            while ($row64 = mysqli_fetch_row($result64)) {
-                $old_inc_id = $row64[0];
-                $oldonset   = $row64[1];
-                $oldexpires = $row64[2];
-                $oldurgency = $row64[3];
-                if ($oldurgency == "Immediate" && $onset < $oldexpires) {$oldonset1 = 0;}
+            $query64 = "SELECT id, onset, expires, urgency FROM incidents WHERE header_id = '$old_header_id' AND (codeSIVS LIKE '$cat.%' OR codeHPPS LIKE '$cat.%' OR codeSVRS LIKE '%.$value') AND id IN ($free);";
+            if ($result64 = mysqli_query($link, $query64)) {
+                $pocet64 = mysqli_num_rows($result64);
+                while ($row64 = mysqli_fetch_row($result64)) {
+                    $old_inc_id = $row64[0];
+                    $oldonset   = $row64[1];
+                    $oldexpires = $row64[2];
+                    $oldurgency = $row64[3];
+                    if ($oldurgency == "Immediate" && $onset < $oldexpires) {$oldonset1 = 0;}
 
-                if ($oldonset1 == $onset1 && $oldexpires == $expires) {
-                    $old_incident_id = $old_inc_id;
-                    $stop            = 1;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+                    if ($oldonset1 == $onset1 && $oldexpires == $expires) {
+                        $old_incident_id = $old_inc_id;
+                        $stop            = 1;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
 
-        if ($stop == 0 && $result101 = mysqli_query($link, $query64)) {
-            while ($row101 = mysqli_fetch_row($result101)) {
-                $old_inc_id = $row101[0];
-                $oldonset   = $row101[1];
-                $oldurgency = $row101[3];
-                if ($oldurgency == "Immediate") {$oldonset1 = 0;}
+            if ($stop == 0 && $result101 = mysqli_query($link, $query64)) {
+                while ($row101 = mysqli_fetch_row($result101)) {
+                    $old_inc_id = $row101[0];
+                    $oldonset   = $row101[1];
+                    $oldurgency = $row101[3];
+                    if ($oldurgency == "Immediate") {$oldonset1 = 0;}
 
-                if ($oldonset1 == $onset1) {
-                    $old_incident_id = $old_inc_id;
-                    $stop            = 1;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+                    if ($oldonset1 == $onset1) {
+                        $old_incident_id = $old_inc_id;
+                        $stop            = 1;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
 
-        if ($stop == 0 && $result119 = mysqli_query($link, $query64)) {
-            while ($row120 = mysqli_fetch_row($result64)) {
-                $old_inc_id = $row120[0];
-                $oldexpires = $row120[2];
+            if ($stop == 0 && $result119 = mysqli_query($link, $query64)) {
+                while ($row120 = mysqli_fetch_row($result64)) {
+                    $old_inc_id = $row120[0];
+                    $oldexpires = $row120[2];
 
-                if ($oldexpires == $expires) {
-                    $old_incident_id = $old_inc_id;
-                    $pozice          = array_search($old_incident_id, $stareORP);
-                    if ($pozice) {
-                        unset($stareORP[$pozice]);
+                    if ($oldexpires == $expires) {
+                        $old_incident_id = $old_inc_id;
+                        $pozice          = array_search($old_incident_id, $stareORP);
+                        if ($pozice) {
+                            unset($stareORP[$pozice]);
+                        }
                     }
                 }
             }
-        }
-        if ($oldexpires > $onset || $oldexpires == "0") {
-            $pairs[] = "$ORP|$old_incident_id|$nove";
+            if ($oldexpires > $onset || $oldexpires == "0") {
+                $pairs[] = "$ORP|$old_incident_id|$nove";
+            }
         }
     }
 }
 
-foreach ($pairs as $trojice) {
-    $rozpad = explode("|", $trojice);
-    $ORP    = $rozpad[0];
-    $old    = $rozpad[1];
-    $new    = $rozpad[2];
+if ($pairs) {
+    foreach ($pairs as $trojice) {
+        $rozpad = explode("|", $trojice);
+        $ORP    = $rozpad[0];
+        $old    = $rozpad[1];
+        $new    = $rozpad[2];
 
-    $query210  = "UPDATE area SET prev = '$old' WHERE incident_id = '$new' AND ORP = '$ORP';";
-    $prikaz210 = mysqli_query($link, $query210);
+        $query210  = "UPDATE area SET prev = '$old' WHERE incident_id = '$new' AND ORP = '$ORP';";
+        $prikaz210 = mysqli_query($link, $query210);
 
-    $query213  = "UPDATE area SET next = '$new' WHERE incident_id = '$old' AND ORP = '$ORP';";
-    $prikaz213 = mysqli_query($link, $query213);
+        $query213  = "UPDATE area SET next = '$new' WHERE incident_id = '$old' AND ORP = '$ORP';";
+        $prikaz213 = mysqli_query($link, $query213);
+    }
 }
 
 mysqli_close($link);
