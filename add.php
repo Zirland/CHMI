@@ -121,7 +121,7 @@ foreach ($xml->info as $jev) {
         $expires_timestamp = 0;
     }
 
-    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001" && $respmatrx != "000000000" && $codeSIVS != "OUTLOOK") {
+    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001" && $respmatrx != "000000000") {
         $query114    = "INSERT INTO incidents (`header_id`, `language`, `category`, `event`, `responseType`, `urgency`, `severity`, `certainty`, `onset`, `expires`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `headline`, `description`, `instruction`, `web`, `situation`, `hydroOutlook`) VALUES ('$header_id', '$lang', '$category', '$event',  '$respmatrx',  '$urgency', '$severity', '$certainty', '$onset_timestamp', '$expires_timestamp', '$codeSIVS', '$codeHPPS', '$codeSVRS', '$headline', '$description', '$instruction', '$web', '$situation', '$hydroOutlook');";
         $command114  = mysqli_query($link, $query114);
         $incident_id = mysqli_insert_id($link);

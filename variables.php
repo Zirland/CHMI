@@ -301,14 +301,6 @@ $prvky = [
     "8122"   => "ORP Vítkov",
 ];
 
-$nadpis = [
-    "Actual"   => "VÝSTRAŽNÁ INFORMACE ",
-    "Exercise" => "Cvičná zpráva ",
-    "System"   => "IGNORUJTE - Interní systémová zpráva ",
-    "Test"     => "IGNORUJTE - Testovací zpráva ",
-    "Draft"    => "IGNORUJTE - Šablona zprávy ",
-];
-
 $nalehavost = [
     "Immediate" => "Okamžitá",
     "Future"    => "Předpovídáno",
@@ -336,7 +328,7 @@ $kod_barvy = [
     "Extreme"  => "Extrémní st. nebezpečí",
 ];
 
-$obrazky2 = [
+$obrazky = [
     "I.1"          => "high-temperature-svgrepo-com",
     "I.2"          => "high-temperature-svgrepo-com",
     "I.3"          => "high-temperature-svgrepo-com",
@@ -384,6 +376,7 @@ $obrazky2 = [
     "XV.1"         => "alert-triangle",
     "XV.2"         => "alert-triangle",
     "XV.3"         => "alert-triangle",
+    "OUTLOOK"      => "alert-triangle",
     "SMOGSIT.O3"   => "factory-towers-spreading-smoke",
     "WARN.O3"      => "factory-towers-spreading-smoke",
     "SMOGSIT.PM10" => "factory-towers-spreading-smoke",
@@ -392,58 +385,6 @@ $obrazky2 = [
     "REG.SO2"      => "factory-towers-spreading-smoke",
     "SMOGSIT.NO2"  => "factory-towers-spreading-smoke",
     "REG.NO2"      => "factory-towers-spreading-smoke",
-];
-
-$obrazky = [
-    "I.1"          => "high-temperature-svgrepo-com",
-    "I.2"          => "high-temperature-svgrepo-com",
-    "I.3"          => "high-temperature-svgrepo-com",
-    "I.4"          => "temperature-svgrepo-com",
-    "I.5"          => "thermometer-medical-fever-temperature-control-tool-svgrepo-com",
-    "I.6"          => "thermometer-medical-fever-temperature-control-tool-svgrepo-com",
-    "I.7"          => "thermometer-medical-fever-temperature-control-tool-svgrepo-com",
-    "I.8"          => "temperature-svgrepo-com",
-    "II.1"         => "wind",
-    "II.2"         => "wind",
-    "II.3"         => "wind",
-    "III.1"        => "snow-fall",
-    "III.2"        => "snow-fall",
-    "III.3"        => "snow-fall",
-    "III.4"        => "snow-fall",
-    "III.5"        => "cloud-snow",
-    "III.6"        => "blizzard-svgrepo-com",
-    "III.7"        => "blizzard-svgrepo-com",
-    "III.8"        => "blizzard-svgrepo-com",
-    "IV.1"         => "car-slid",
-    "IV.2"         => "car-slid",
-    "IV.3"         => "car-slid",
-    "IV.4"         => "car-slid",
-    "IV.5"         => "foggy",
-    "IV.6"         => "foggy",
-    "V.1"          => "cloud-and-thunder",
-    "V.2"          => "cloud-and-thunder",
-    "V.2a"         => "storm",
-    "V.3"          => "cloud-and-thunder",
-    "V.3a"         => "storm",
-    "VI.1"         => "raining",
-    "VI.2"         => "raining",
-    "VI.3"         => "raining",
-    "VII.1"        => "flood-house",
-    "VII.2"        => "flood-house",
-    "VII.3"        => "flood-house",
-    "VII.4"        => "flood-house",
-    "VIII.1"       => "fire",
-    "VIII.2"       => "fire",
-    "X.1"          => "alert-triangle",
-    "X.2"          => "alert-triangle",
-    "X.3"          => "alert-triangle",
-    "XI.1"         => "flood-decrease",
-    "XI.2"         => "flood-decrease",
-    "XI.3"         => "flood-decrease",
-    "XI.4"         => "flood-decrease",
-    "REG.PM10"     => "factory-towers-spreading-smoke",
-    "SMOGSIT.03"   => "factory-towers-spreading-smoke",
-    "SMOGSIT.PM10" => "factory-towers-spreading-smoke",
 ];
 
 $KRAJE_KODY = [
