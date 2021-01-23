@@ -411,21 +411,10 @@ foreach ($downlevel as $ORP) {
 }
 $vystup .= "</table></blockquote>";
 
-sort($used);
-$used = array_unique($used);
-
-unset($usedcodes);
-
-$query473 = "SELECT DISTINCT code FROM temp";
-if ($result473 = mysqli_query($link, $query473)) {
-    while ($row473 = mysqli_fetch_row($result473)) {
-        $usedcodes[] = $row473[0];
-    }
+if ($used) {
+    sort($used);
+    $used = array_unique($used);
 }
-
-if (in_array("HPPS", $usedcodes)) {$useHPPS = "1";}
-if (in_array("SIVS", $usedcodes)) {$useSIVS = "1";}
-if (in_array("SVRS", $usedcodes)) {$useSVRS = "1";}
 
 $query55 = "SELECT * FROM header WHERE id = '$header_id';";
 if ($result55 = mysqli_query($link, $query55)) {
@@ -434,6 +423,9 @@ if ($result55 = mysqli_query($link, $query55)) {
         $sent           = $row55[2];
         $status         = $row55[3];
         $msgType        = $row55[4];
+        $useSIVS        = $row55[5];
+        $useHPPS        = $row55[6];
+        $useSVRS        = $row55[7];
         $note           = $row55[8];
         $references     = $row55[9];
         $incidents      = $row55[10];
@@ -472,7 +464,7 @@ if ($result55 = mysqli_query($link, $query55)) {
                 }
                 break;
         }
-        
+
         echo "<div class=\"header\">$header</div>";
         echo "<br/>";
         echo "Zpráva č. " . $poradove_cislo . "<br/>";
@@ -513,9 +505,9 @@ if ($result144 = mysqli_query($link, $query144)) {
         $situace[] = $row144[0];
     }
 }
-$situace = array_filter($situace);
 
 if ($situace) {
+    $situace = array_filter($situace);
     echo "<p></p><b>Meteorologická situace:</b> $situace[0]<br/>";
 }
 
@@ -532,16 +524,18 @@ if ($result560 = mysqli_query($link, $query560)) {
     }
 }
 
-$distribuce = array_unique($distribuce);
-$distribuce = array_filter($distribuce);
+if ($distribuce) {
+    $distribuce = array_unique($distribuce);
+    $distribuce = array_filter($distribuce);
 
-$krajedistr = "";
+    $krajedistr = "";
 
-echo "Distribuce: ";
-foreach ($distribuce as $distrkraj) {
-    $krajedistr .= "$KRAJE_KODY[$distrkraj], ";
+    echo "Distribuce: ";
+    foreach ($distribuce as $distrkraj) {
+        $krajedistr .= "$KRAJE_KODY[$distrkraj], ";
+    }
+
+    echo substr($krajedistr, 0, -2);
 }
-
-echo substr($krajedistr, 0, -2);
 
 mysqli_close($link);
