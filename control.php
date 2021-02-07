@@ -6,7 +6,8 @@ function insArea($ORP)
     global $link, $header_id, $incident_id, $onset_timestamp, $expires_timestamp, $severity, $ceiling, $altitude, $coverage;
 
     $query135   = "INSERT INTO area (`header_id`, `incident_id`, `ORP`, `onset`, `expires`, `severity`, `ceiling`, `altitude`) VALUES ('$header_id','$incident_id','$ORP', '$onset_timestamp', '$expires_timestamp', '$severity', '$ceiling', '$altitude');";
-    $zapis135   = mysqli_query($link, $query135);
+echo "$query135<br/>";
+//    $zapis135   = mysqli_query($link, $query135);
     $coverage[] = $ORP;
     return $coverage;
 }
@@ -43,7 +44,8 @@ $sent_timestamp = strtotime($sent);
 $sent           = $sent_timestamp;
 
 $query42   = "INSERT INTO header (`identifier`, `sent`, `status`, `msgType`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `note`, `references`, `incidents`) VALUES ('$identifier', '$sent_timestamp', '$status', '$msgType', '$useSIVS', '$useHPPS', '$useSVRS', '$note', '$references', '$incidents');";
-$command37 = mysqli_query($link, $query42);
+echo "$query42<br/>";
+//$command37 = mysqli_query($link, $query42);
 $header_id = mysqli_insert_id($link);
 
 foreach ($xml->info as $jev) {
@@ -123,7 +125,8 @@ foreach ($xml->info as $jev) {
 
     if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001") {
         $query114    = "INSERT INTO incidents (`header_id`, `language`, `category`, `event`, `responseType`, `urgency`, `severity`, `certainty`, `onset`, `expires`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `headline`, `description`, `instruction`, `web`, `situation`, `hydroOutlook`) VALUES ('$header_id', '$lang', '$category', '$event',  '$respmatrx',  '$urgency', '$severity', '$certainty', '$onset_timestamp', '$expires_timestamp', '$codeSIVS', '$codeHPPS', '$codeSVRS', '$headline', '$description', '$instruction', '$web', '$situation', '$hydroOutlook');";
-        $command114  = mysqli_query($link, $query114);
+echo "$query114<br/>";
+//        $command114  = mysqli_query($link, $query114);
         $incident_id = mysqli_insert_id($link);
 
         $uzemi = $jev->area;
@@ -142,7 +145,8 @@ foreach ($xml->info as $jev) {
                 $kodorp = $ORP->value;
 
                 $query127   = "INSERT INTO area (`header_id`, `incident_id`, `ORP`, `onset`, `expires`, `severity`, `ceiling`, `altitude`) VALUES ('$header_id', '$incident_id', '$kodorp', '$onset_timestamp', '$expires_timestamp', '$severity', '$ceiling', '$altitude');";
-                $command127 = mysqli_query($link, $query127);
+// echo "$query127<br/>";
+//                $command127 = mysqli_query($link, $query127);
             }
         }
 
@@ -779,10 +783,12 @@ if ($pairs) {
         $new    = $rozpad[2];
 
         $query210  = "UPDATE area SET prev = '$old' WHERE incident_id = '$new' AND ORP = '$ORP';";
-        $prikaz210 = mysqli_query($link, $query210);
+echo "$query210<br/>";
+//        $prikaz210 = mysqli_query($link, $query210);
 
         $query213  = "UPDATE area SET next = '$new' WHERE incident_id = '$old' AND ORP = '$ORP';";
-        $prikaz213 = mysqli_query($link, $query213);
+echo "$query213<br/>";
+//        $prikaz213 = mysqli_query($link, $query213);
     }
 }
 

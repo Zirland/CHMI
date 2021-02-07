@@ -405,7 +405,6 @@ function output($incident_no, $ORP)
             $out .= "$description";
             $out .= $vyska;
             $out .= "</td></tr>";
-
             if ($hydroOutlook) {
                 $out .= "<tr><td colspan=\"3\"><b>Hydrologická informační zpráva:</b> $hydroOutlook</td></tr>";
             }

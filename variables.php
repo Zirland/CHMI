@@ -319,6 +319,7 @@ $barvy = [
     "Moderate" => "yellow",
     "Severe"   => "orange",
     "Extreme"  => "red",
+    "Unknown" => "white",
     ""         => "silver",
 ];
 
