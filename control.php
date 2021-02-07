@@ -123,7 +123,7 @@ foreach ($xml->info as $jev) {
         $expires_timestamp = 0;
     }
 
-    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001" && $respmatrx != "000000000") {
+    if ($lang == "cs" && $respmatrx != "000000010" && $respmatrx != "000000001") {
         $query114    = "INSERT INTO incidents (`header_id`, `language`, `category`, `event`, `responseType`, `urgency`, `severity`, `certainty`, `onset`, `expires`, `codeSIVS`, `codeHPPS`, `codeSVRS`, `headline`, `description`, `instruction`, `web`, `situation`, `hydroOutlook`) VALUES ('$header_id', '$lang', '$category', '$event',  '$respmatrx',  '$urgency', '$severity', '$certainty', '$onset_timestamp', '$expires_timestamp', '$codeSIVS', '$codeHPPS', '$codeSVRS', '$headline', '$description', '$instruction', '$web', '$situation', '$hydroOutlook');";
 echo "$query114<br/>";
 //        $command114  = mysqli_query($link, $query114);
@@ -145,7 +145,7 @@ echo "$query114<br/>";
                 $kodorp = $ORP->value;
 
                 $query127   = "INSERT INTO area (`header_id`, `incident_id`, `ORP`, `onset`, `expires`, `severity`, `ceiling`, `altitude`) VALUES ('$header_id', '$incident_id', '$kodorp', '$onset_timestamp', '$expires_timestamp', '$severity', '$ceiling', '$altitude');";
-echo "$query127<br/>";
+// echo "$query127<br/>";
 //                $command127 = mysqli_query($link, $query127);
             }
         }
