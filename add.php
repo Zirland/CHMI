@@ -47,7 +47,7 @@ $command37 = mysqli_query($link, $query42);
 $header_id = mysqli_insert_id($link);
 
 foreach ($xml->info as $jev) {
-    $situation = $criterion = $eventEndingTime = $hydroOutlook = "";
+    $situation = $eventEndingTime = $hydroOutlook = "";
     $codeSIVS  = $codeSVRS  = $codeHPPS  = "0";
 
     $lang = $jev->language;
@@ -112,11 +112,12 @@ foreach ($xml->info as $jev) {
         ${$kontrola->valueName} .= $kontrola->value . "|";
     }
 
+    $eventEndingTime = substr($eventEndingTime, 0, -1);
     $situation    = substr($situation, 0, -1);
     $hydroOutlook = substr($hydroOutlook, 0, -1);
 
     $onset_timestamp   = strtotime($onset);
-    $expires_timestamp = strtotime($expires);
+    $expires_timestamp = strtotime($eventEndingTime);
     if ($expires_timestamp == "") {
         $expires_timestamp = 0;
     }
