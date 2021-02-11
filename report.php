@@ -40,7 +40,6 @@ if ($result192 = mysqli_query($link, $query192)) {
 
 $vystup .= "<blockquote>";
 
-unset($used);
 $celkem = 0;
 
 unset($abandoned);
@@ -109,8 +108,6 @@ if ($getF == "1") {
                 while ($row152 = mysqli_fetch_row($result152)) {
                     $incident_id = $row152[0];
                     $prev        = $row152[1];
-
-                    $used[] = $incident_id;
                     $vystup .= Fcompare($prev, $incident_id, $ORP);
                 }
             }
@@ -145,8 +142,6 @@ if ($getF == "1") {
                 while ($row152 = mysqli_fetch_row($result152)) {
                     $incident_id = $row152[0];
                     $prev        = $row152[1];
-
-                    $used[] = $incident_id;
                     $vystup .= Fcompare($prev, $incident_id, $ORP);
                 }
             }
@@ -194,7 +189,6 @@ if ($result138 = mysqli_query($link, $query138)) {
                 if ($result168 = mysqli_query($link, $query168)) {
                     $count168 = mysqli_num_rows($result168);
                     if ($count168 == 0) {
-                        $used[] = $incident_id;
                         $vystup .= Fcompare($prev, $incident_id, $ORP);
                     }
                 }
@@ -251,7 +245,6 @@ foreach ($downlevel as $ORP) {
                 while ($row277 = mysqli_fetch_row($result277)) {
                     $old = $row277[0];
                     $vystup .= Fcompare($old, 0, $ORP);
-                    $pozice    = array_search($old, $abandoned);
                     $striked[] = $old;
                 }
             }
@@ -265,7 +258,6 @@ foreach ($downlevel as $ORP) {
                     if ($result210 = mysqli_query($link, $query210)) {
                         $count210 = mysqli_num_rows($result210);
                         if ($count210 == 0) {
-                            $used[] = $incident_id;
                             $vystup .= Fcompare($prev, $incident_id, $ORP);
                         }
                     }
@@ -334,7 +326,6 @@ foreach ($downlevel as $ORP) {
                         if ($result257 = mysqli_query($link, $query257)) {
                             $count257 = mysqli_num_rows($result257);
                             if ($count257 == 0) {
-                                $used[] = $incident_id;
                                 $vystup .= Fcompare($prev, $incident_id, $ORP);
                             }
                         }
@@ -396,7 +387,6 @@ foreach ($downlevel as $ORP) {
                             if ($result297 = mysqli_query($link, $query297)) {
                                 $count297 = mysqli_num_rows($result297);
                                 if ($count297 == 0) {
-                                    $used[] = $incident_id;
                                     $vystup .= Fcompare($prev, $incident_id, $ORP);
                                 }
                             }
@@ -410,11 +400,6 @@ foreach ($downlevel as $ORP) {
     unset($downlevel1);
 }
 $vystup .= "</table></blockquote>";
-
-if ($used) {
-    sort($used);
-    $used = array_unique($used);
-}
 
 $query55 = "SELECT * FROM header WHERE id = '$header_id';";
 if ($result55 = mysqli_query($link, $query55)) {
