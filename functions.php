@@ -1,7 +1,7 @@
 <?php
 function Fcompare($incident1, $incident2, $ORP)
 {
-    global $link, $nalehavost, $jistota, $barvy, $kod_barvy, $sent, $maxdoba, $obrazky, $obrazky2;
+    global $link, $nalehavost, $jistota, $barvy, $kod_barvy, $sent, $maxdoba, $obrazky;
     $out    = "";
     $rozsah = date("(d)H:i", $maxdoba);
 
@@ -326,9 +326,9 @@ function Fcompare($incident1, $incident2, $ORP)
 
 function output($incident_no, $ORP)
 {
-    global $link, $nalehavost, $jistota, $barvy, $kod_barvy, $sent, $maxdoba, $obrazky, $obrazky2;
+    global $link, $nalehavost, $jistota, $barvy, $kod_barvy, $sent, $maxdoba, $obrazky;
     $out    = $vyska    = "";
-    $rozsah = date("(d)H:i", $maxdoba);
+    $rozsah = date("(d) H:i", $maxdoba);
 
     $query329 = "SELECT ceiling, altitude FROM area WHERE incident_id = '$incident_no' AND ORP = '$ORP';";
     if ($result329 = mysqli_query($link, $query329)) {
@@ -371,9 +371,9 @@ function output($incident_no, $ORP)
             $kod_severity = $kod_barvy[$severity];
 
             $pozadi   = $barvy[$severity];
-            $zaslani  = date("(d)H:i", $sent);
-            $zahajeni = date("(d)H:i", $onset);
-            $ukonceni = date("(d)H:i", $expires);
+            $zaslani  = date("(d) H:i", $sent);
+            $zahajeni = date("(d) H:i", $onset);
+            $ukonceni = date("(d) H:i", $expires);
 
             if ($expires < $onset) {
                 $ukonceni = "... ...";
@@ -396,7 +396,7 @@ function output($incident_no, $ORP)
             $codeArr = explode(".", $code);
             $cat     = $codeArr[0];
 
-            $image = $obrazky[$code2];
+            $image = $obrazky[$code];
 
             $out .= "<table class=\"tg\" width=\"100%\">";
             $out .= "<tr><td width=\"30\" style=\"background-color: $pozadi;\"><img src=\"svg/" . $image . ".svg\"></td><td width=\"50\" style=\"text-align: center;\">$kod_severity</td><td><table class=\"no\" width=\"100%\"><tr><td width=\"$before%\"></td><td width=\"30\" style=\"text-align: right;\">$caszah[0]<br/>$caszah[1]</td><td width=\"$jazda%\"><img src=\"$pozadi.png\" height=\"20\" width=\"100%\"></td><td width=\"30\" style=\"text-align: left;\">$casuko[0]<br/>$casuko[1]</td><td width=\"$after%\"></td></tr></table></td></tr>";
@@ -408,7 +408,117 @@ function output($incident_no, $ORP)
             if ($hydroOutlook) {
                 $out .= "<tr><td colspan=\"3\"><b>Hydrologická informační zpráva:</b> $hydroOutlook</td></tr>";
             }
+            $out .= "<tr><td colspan=\"3\"><b>Doporučení:</b> $instruction</td></tr>";
             $out .= "</table>";
+
+            return $out;
+        }
+    }
+}
+
+function output2($incident_no)
+{
+    global $link, $nalehavost, $jistota, $barvy, $kod_barvy, $sent, $maxdoba, $obrazky, $prvky;
+    $out    = $vyska    = "";
+    $rozsah = date("(d) H:i", $maxdoba);
+
+    $query329 = "SELECT ceiling, altitude FROM area WHERE incident_id = '$incident_no';";
+    if ($result329 = mysqli_query($link, $query329)) {
+        while ($row329 = mysqli_fetch_row($result329)) {
+            $ceiling  = $row329[0];
+            $altitude = $row329[1];
+        }
+    }
+
+    if ($ceiling > 0) {
+        $ceiling = round($ceiling * 0.3048);
+        $vyska   = " | Platnost jevu do $ceiling m n.m.";
+    }
+    if ($altitude > 0) {
+        $altitude = round($altitude * 0.3048);
+        $vyska    = " | Platnost jevu do $altitude m n.m.";
+    }
+
+    $query26 = "SELECT * FROM incidents WHERE id = '$incident_no';";
+    if ($result26 = mysqli_query($link, $query26)) {
+        while ($row26 = mysqli_fetch_row($result26)) {
+            $event        = $row26[4];
+            $urgency      = $row26[6];
+            $severity     = $row26[7];
+            $certainty    = $row26[8];
+            $onset        = $row26[9];
+            $expires      = $row26[10];
+            $codeSIVS     = $row26[11];
+            $codeHPPS     = $row26[12];
+            $codeSVRS     = $row26[13];
+            $description  = $row26[15];
+            $instruction  = $row26[16];
+            $situation    = $row26[18];
+            $hydroOutlook = $row26[22];
+
+            $code = $codeSVRS;
+            if ($codeSIVS != "0") {$code = $codeSIVS;}
+            if ($codeHPPS != "0") {$code = $codeHPPS;}
+
+            $kod_severity = $kod_barvy[$severity];
+
+            $pozadi   = $barvy[$severity];
+            $zaslani  = date("(d) H:i", $sent);
+            $zahajeni = date("(d) H:i", $onset);
+            $ukonceni = date("(d) H:i", $expires);
+
+            if ($expires < $onset) {
+                $ukonceni = "... ...";
+                $expires  = $maxdoba;
+            }
+            $caszah = explode(" ", $zahajeni);
+            $casuko = explode(" ", $ukonceni);
+
+            $trvani = $maxdoba - $sent;
+            $start  = $onset - $sent;
+            $end    = $expires - $onset;
+            $dojezd = $maxdoba - $expires;
+
+            $before = floor(($start / $trvani) * 100);
+            $gap    = ceil((30 / $trvani) * 100);
+
+            $jazda = round(($end / $trvani) * 100) - $gap;
+            $after = floor(($dojezd / $trvani) * 100);
+
+            $codeArr = explode(".", $code);
+            $cat     = $codeArr[0];
+
+            $image = $obrazky[$code];
+
+            $out .= "<blockquote>";
+            $out .= "<table class=\"tg\" width=\"100%\">";
+            $out .= "<tr><td width=\"30\" style=\"background-color: $pozadi;\"><img src=\"svg/" . $image . ".svg\"></td><td width=\"50\" style=\"text-align: center;\">$kod_severity</td><td><table class=\"no\" width=\"100%\"><tr><td width=\"$before%\"></td><td width=\"30\" style=\"text-align: right;\">$caszah[0]<br/>$caszah[1]</td><td width=\"$jazda%\"><img src=\"$pozadi.png\" height=\"20\" width=\"100%\"></td><td width=\"30\" style=\"text-align: left;\">$casuko[0]<br/>$casuko[1]</td><td width=\"$after%\"></td></tr></table></td></tr>";
+            $out .= "<tr><td colspan=\"3\">$incident_no: <b>Popis</b>: ";
+            if ($certainty == "Observed") {$out .= "VÝSKYT JEVU – ";}
+            $out .= "$description";
+            $out .= $vyska;
+            $out .= "</td></tr>";
+            if ($hydroOutlook) {
+                $out .= "<tr><td colspan=\"3\"><b>Hydrologická informační zpráva:</b> $hydroOutlook</td></tr>";
+            }
+            $out .= "<tr><td colspan=\"3\"><b>Doporučení:</b> $instruction</td></tr>";
+
+            $query26 = "SELECT ORP FROM area WHERE incident_id = '$incident_no' AND ORP > 999 AND ORP < 10000;";
+            if ($result26 = mysqli_query($link, $query26)) {
+                while ($row26 = mysqli_fetch_row($result26)) {
+                    $uzemiArr[] = $row26[0];
+                }
+            }
+
+            foreach ($uzemiArr as $obvod) {
+                $uzemiArrClean[] = $prvky[$obvod];
+            }
+            
+            $uzemi = implode(", ", $uzemiArrClean);
+            
+            $out .= "<tr><td colspan=\"3\"><b>Územní působnost:</b> $uzemi</td></tr>";
+            $out .= "</table>";
+            $out .= "</blockquote>";
 
             return $out;
         }
